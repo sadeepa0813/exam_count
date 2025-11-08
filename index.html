@@ -1911,8 +1911,8 @@
         
         <div class="timetable-notice">
           <div class="timetable-notice-icon">📅</div>
-          <h3 class="timetable-notice-title">O/L 2025 Timetable Available</h3>
-          <p class="timetable-notice-text">The official O/L 2025 examination timetable is now available.</p>
+          <h3 class="timetable-notice-title">O/L 2025 Timetable Not Available</h3>
+          <p class="timetable-notice-text">The official O/L 2025 examination timetable is not available.</p>
           <p class="timetable-notice-subtext">Select your subjects below to view your personalized exam schedule.</p>
         </div>
         
@@ -1923,7 +1923,7 @@
               <label class="subject-checkbox">
                 <input type="checkbox" value="sinhala-ol" data-name="Sinhala">
                 <span class="checkmark"></span>
-                <span>සාමාන්‍ය පෙළ</span>
+                <span>sinhala</span>
               </label>
               <label class="subject-checkbox">
                 <input type="checkbox" value="mathematics-ol" data-name="Mathematics">
@@ -2840,13 +2840,14 @@ function closeUpdateNotification() {
 
 function viewUpdateDetails() {
   closeUpdateNotification();
-  showAlert('🎉', 'What\'s New - updates', 
-    '• Dark mode එකක් එකතු කරා\n' +
-    '• වෙබ් එකට ලොග් වෙද්දි ම සාමාන්‍ය පෙළ දවස් පෙනවා\n' +
-    '• කාලසටහන් නිකුත් කරලා නැති නිසා ඒ features වැඩ නෑ\n' +
-    '• තව මොනා හරි අප්ඩෙට්ස් ගන්න ඔනි නම් පහල Report නම්බර් එකට මැසෙජ් එකක් දාන්න \n\n' +
-    'Thank you for using our exam countdown system! 🎓');
-}
+  showAlert('🎉', 'What\'s New - Updates', 
+    '• 🌓 Dark mode එකක් එකතු කරා\n\n' +
+    '• 💻 වෙබ් එකට ලොග් වෙද්දිම සාමාන්‍ය පෙළ දවස් පෙනෙනවා\n\n' +
+    '• 🕒 කාලසටහන් නිකුත් කරලා නැති නිසා ඒ feature එක තාවකාලිකව නොපැමිණේ\n\n' +
+    '• 📩 තව updates ගන්න ඔනි නම්, පහල Report නම්බර් එකට මැසෙජ් එකක් දාන්න\n\n' +
+    '🙏 Thank you for using our Exam Countdown System! 🎓'
+  );
+    }
 
 /* ---------- Initialization ---------- */
 function initializeApp() {
