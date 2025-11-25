@@ -45,6 +45,10 @@
       --whatsapp: #25D366;
       --warning: #f59e0b;
       --error: #ef4444;
+      
+      /* Performance optimized animations */
+      --animation-duration: 0.3s;
+      --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     /* Light Theme Variables */
@@ -88,7 +92,8 @@
       justify-content:center;
       padding:16px;
       animation: bgShift 30s ease-in-out infinite alternate;
-      transition: background var(--transition-speed) ease;
+      transition: background var(--animation-duration) var(--animation-timing);
+      will-change: background;
     }
     
     @keyframes bgShift {
@@ -99,7 +104,8 @@
     .wrap {
       width:100%;
       max-width:400px;
-      animation: fadeInUp 0.8s ease-out;
+      animation: fadeInUp 0.8s var(--animation-timing);
+      transform: translateZ(0);
     }
     
     @keyframes fadeInUp {
@@ -115,11 +121,12 @@
       backdrop-filter:blur(10px);
       border:1px solid var(--card-border);
       margin-bottom:16px;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
     }
     
     .card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 25px 50px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,0.15);
     }
     
@@ -157,11 +164,12 @@
       font-size:24px;
       font-weight:800;
       color:white;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
     }
     
     .logo:hover {
-      transform: scale(1.05);
+      transform: scale(1.05) translateZ(0);
       box-shadow:0 12px 30px rgba(124,58,237,0.4);
     }
     
@@ -181,8 +189,8 @@
     }
     
     @keyframes pulse {
-      0%, 100% { transform:scale(1); }
-      50% { transform:scale(1.05); }
+      0%, 100% { transform:scale(1) translateZ(0); }
+      50% { transform:scale(1.05) translateZ(0); }
     }
     
     h1 {
@@ -221,9 +229,10 @@
       font-weight:600;
       font-size:12px;
       cursor:pointer;
-      transition:all var(--transition-speed) ease;
+      transition:all var(--animation-duration) var(--animation-timing);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0);
     }
     
     .batch-btn::before {
@@ -234,7 +243,7 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
+      transition: left 0.5s var(--animation-timing);
     }
     
     .batch-btn:hover::before {
@@ -244,7 +253,7 @@
     .batch-btn.active {
       background:var(--btn-primary);
       color:white;
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 4px 12px rgba(124,58,237,0.3);
     }
     
@@ -335,9 +344,10 @@
       border-radius:16px;
       text-align:center;
       border:1px solid var(--tile-border);
-      transition:all var(--transition-speed) ease;
+      transition:all var(--animation-duration) var(--animation-timing);
       position:relative;
       overflow:hidden;
+      transform: translateZ(0);
     }
     
     .tile::before {
@@ -348,7 +358,7 @@
       width:100%;
       height:100%;
       background:linear-gradient(90deg,transparent,rgba(124,58,237,0.1),transparent);
-      transition:left 2s;
+      transition:left 2s var(--animation-timing);
     }
     
     .tile-2026::before {
@@ -368,7 +378,7 @@
     }
     
     .tile:hover {
-      transform: translateY(-4px);
+      transform: translateY(-4px) translateZ(0);
       box-shadow:0 8px 20px var(--shadow-color);
     }
     
@@ -564,11 +574,12 @@
       border-radius: 12px;
       padding: 14px;
       border: 1px solid var(--tile-border);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
     }
     
     .subject-category:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 8px 16px var(--shadow-color);
     }
     
@@ -595,7 +606,7 @@
       cursor: pointer;
       font-size: 11px;
       color: var(--text-primary);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .subject-checkbox:hover {
@@ -614,7 +625,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       flex-shrink: 0;
     }
     
@@ -644,9 +655,10 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0);
     }
     
     .submit-btn::before {
@@ -657,7 +669,7 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
+      transition: left 0.5s var(--animation-timing);
     }
     
     .submit-btn:hover::before {
@@ -670,7 +682,7 @@
     }
     
     .submit-btn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 6px 16px rgba(124,58,237,0.3);
     }
     
@@ -693,7 +705,7 @@
     
     .clear-btn:hover {
       background: rgba(239,68,68,0.2);
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
     }
     
     .selected-count {
@@ -717,7 +729,7 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       background: linear-gradient(135deg, var(--warning), #d97706);
       color: white;
       margin-bottom: 10px;
@@ -726,11 +738,12 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transform: translateZ(0);
     }
     
     .complaint-btn:hover {
       background: linear-gradient(135deg, #d97706, #b45309);
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 6px 16px rgba(245,158,11,0.3);
     }
     
@@ -755,7 +768,7 @@
       z-index: 10000;
       opacity: 0;
       visibility: hidden;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .popup-overlay.show {
@@ -774,7 +787,7 @@
       border: 2px solid var(--modal-border);
       box-shadow:0 30px 60px var(--shadow-color);
       transform: scale(0.8) translateY(30px);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -808,7 +821,7 @@
       cursor: pointer;
       padding: 6px;
       border-radius: 6px;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .close-popup:hover {
@@ -841,7 +854,7 @@
       padding: 16px;
       margin-bottom: 12px;
       border: 1px solid var(--card-border);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .exam-date-item:hover {
@@ -922,7 +935,8 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
     }
     
     .popup-btn:not(.close-btn) {
@@ -932,7 +946,7 @@
     
     .popup-btn:not(.close-btn):hover {
       background: #16a34a;
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
     }
     
     .popup-btn.close-btn {
@@ -953,7 +967,7 @@
     
     .popup-btn.download-btn:hover {
       background: linear-gradient(135deg, #d97706, #b45309);
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
     }
     
     .popup-btn.download-btn:disabled {
@@ -976,7 +990,7 @@
       z-index: 10001;
       opacity: 0;
       visibility: hidden;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .alert-overlay.show {
@@ -994,7 +1008,7 @@
       border: 2px solid var(--modal-border);
       box-shadow:0 30px 60px var(--shadow-color);
       transform: scale(0.8) translateY(30px);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       text-align: center;
     }
     
@@ -1035,7 +1049,8 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
     }
     
     .alert-btn.primary {
@@ -1044,7 +1059,7 @@
     }
     
     .alert-btn.primary:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow:0 6px 16px rgba(124,58,237,0.3);
     }
     
@@ -1087,9 +1102,10 @@
       cursor: pointer;
       font-size: 15px;
       text-decoration: none;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0);
     }
     
     .wa-btn::before {
@@ -1101,7 +1117,7 @@
       height: 0;
       border-radius: 50%;
       background: rgba(255,255,255,0.2);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       transform: translate(-50%,-50%);
     }
     
@@ -1116,7 +1132,7 @@
     }
     
     .wa-btn-chat:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) translateZ(0);
       box-shadow:0 10px 30px rgba(37,211,102,0.4);
     }
     
@@ -1213,18 +1229,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       animation: float 3s ease-in-out infinite;
+      transform: translateZ(0);
     }
     
     .floating-contact-btn:hover {
-      transform: scale(1.1) rotate(10deg);
+      transform: scale(1.1) rotate(10deg) translateZ(0);
       box-shadow:0 12px 30px rgba(124, 58, 237, 0.6);
     }
     
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      0%, 100% { transform: translateY(0) translateZ(0); }
+      50% { transform: translateY(-8px) translateZ(0); }
     }
     
     #contactPopup {
@@ -1241,7 +1258,7 @@
       z-index: 10000;
       opacity: 0;
       visibility: hidden;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     #contactPopup.show {
@@ -1261,7 +1278,7 @@
       box-shadow:0 30px 60px var(--shadow-color);
       transform: scale(0.9) translateY(20px);
       opacity: 0;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       overflow-y: auto;
       position: relative;
     }
@@ -1325,7 +1342,7 @@
       border-radius: 12px;
       color: var(--text-primary);
       font-size: 14px;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     input:focus, textarea:focus {
@@ -1348,7 +1365,7 @@
       text-align: center;
       opacity: 0;
       transform: translateY(10px);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .status-message.show {
@@ -1393,7 +1410,7 @@
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .website-link:hover {
@@ -1450,19 +1467,20 @@
       justify-content: center;
       cursor: pointer;
       z-index: 1000;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
       box-shadow:0 4px 12px var(--shadow-color);
+      transform: translateZ(0);
     }
     
     .theme-toggle:hover {
-      transform: scale(1.1);
+      transform: scale(1.1) translateZ(0);
       box-shadow:0 6px 16px var(--shadow-color);
     }
     
     .theme-toggle i {
       font-size: 20px;
       color: var(--text-primary);
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .theme-toggle:hover i {
@@ -1485,7 +1503,7 @@
       gap: 12px;
       z-index: 10001;
       opacity: 0;
-      transition: all var(--transition-speed) ease;
+      transition: all var(--animation-duration) var(--animation-timing);
     }
     
     .notification-toast.show {
@@ -1541,7 +1559,7 @@
       height: 100%;
       background: linear-gradient(90deg, var(--accent), var(--secondary));
       border-radius: 4px;
-      transition: width 0.5s ease;
+      transition: width 0.5s var(--animation-timing);
     }
     
     /* Study Stats */
@@ -1558,6 +1576,13 @@
       border-radius: 10px;
       text-align: center;
       border: 1px solid var(--card-border);
+      transition: all var(--animation-duration) var(--animation-timing);
+      transform: translateZ(0);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px) translateZ(0);
+      box-shadow:0 4px 12px var(--shadow-color);
     }
     
     .stat-value {
@@ -1585,7 +1610,7 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       z-index: 10000;
       opacity: 0;
-      transition: all 0.5s ease;
+      transition: all 0.5s var(--animation-timing);
       max-width: 90%;
       width: 400px;
     }
@@ -1682,6 +1707,219 @@
       font-size: 12px;
       color: var(--text-secondary);
       margin: 0;
+    }
+    
+    /* Enhanced Animations */
+    @keyframes slideInFromBottom {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideInFromTop {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Performance optimizations */
+    .gpu-accelerated {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000px;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* Study Reminder Badge */
+    .reminder-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--error);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+    
+    /* Achievement System */
+    .achievement-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      z-index: 10002;
+      text-align: center;
+      transition: transform 0.5s var(--animation-timing);
+    }
+    
+    .achievement-popup.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .achievement-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .achievement-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .achievement-desc {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Offline Indicator */
+    .offline-indicator {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: var(--error);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+      z-index: 999;
+      animation: slideInFromTop 0.3s var(--animation-timing);
+    }
+    
+    .offline-indicator.show {
+      display: block;
+    }
+    
+    /* Loading Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, var(--glass) 25%, rgba(124,58,237,0.1) 50%, var(--glass) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+    
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    /* Enhanced Mobile Experience */
+    @media (max-width: 480px) {
+      .wrap {
+        padding: 8px;
+      }
+      
+      .card {
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      
+      .tile {
+        padding: 16px 12px;
+      }
+      
+      .tile .num {
+        font-size: 24px;
+      }
+      
+      h1 {
+        font-size: 16px;
+      }
+      
+      .lead {
+        font-size: 11px;
+      }
+      
+      .batch-btn {
+        font-size: 11px;
+        padding: 8px 10px;
+      }
+      
+      .quote-text {
+        font-size: 12px;
+      }
+      
+      .subject-category {
+        padding: 12px;
+      }
+      
+      .category-title {
+        font-size: 11px;
+      }
+      
+      .subject-checkbox {
+        font-size: 10px;
+      }
+    }
+    
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .floating-contact-btn,
+      .theme-toggle,
+      .notification-toast,
+      .update-notification,
+      .offline-indicator {
+        display: none !important;
+      }
+      
+      .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+      }
     }
   </style>
 </head>
@@ -2548,328 +2786,3 @@ const quotesOL = {
   "15": "පරීක්ෂණ ප්‍රශ්න වලට වැඩිපුර කාලය වෙන් කරන්න 🔬"
 };
 
-/* ---------- Batch Switch UI ---------- */
-function switchBatch(batch) {
-  currentBatch = batch;
-  document.querySelectorAll('.batch-btn').forEach(btn => btn.classList.remove('active'));
-  const btn = document.querySelector(`[data-batch="${batch}"]`);
-  if (btn) btn.classList.add('active');
-
-  ['2025','2026','2027','ol'].forEach(b => {
-    const section = document.getElementById(`section${b === 'ol' ? 'OL' : b}`);
-    if (section) section.classList.toggle('hidden', b !== batch);
-  });
-
-  // 修改科目选择卡的显示逻辑
-  const subjectCard = document.getElementById('subjectSelectionCard');
-  if (subjectCard) {
-    // 只在A/L批次显示科目选择卡
-    subjectCard.classList.toggle('hidden', batch === 'ol');
-  }
-
-  const mainLogo = document.getElementById('mainLogo');
-  if (mainLogo) {
-    mainLogo.className = 'logo';
-    if (batch === '2026') mainLogo.classList.add('logo-2026');
-    if (batch === '2027') {
-      mainLogo.classList.add('logo-2027');
-      showAlert('🎓', '2027 A/L Batch', '2027 අයගේ දින ගැසට් නිකුත් වෙලා නැත. නිකුත් වූ විට අපි update කරන්නම්.');
-    }
-    if (batch === 'ol') mainLogo.classList.add('logo-ol');
-  }
-
-  updateCountdown();
-  getDailyQuote();
-}
-document.querySelectorAll('.batch-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (!btn.classList.contains('disabled')) switchBatch(btn.dataset.batch);
-  });
-});
-
-/* ---------- Daily Quote ---------- */
-function getDailyQuote() {
-  const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-  let quoteSet = quotes;
-  let batchSuffix = '2025';
-  switch (currentBatch) {
-    case '2025': quoteSet = quotes; batchSuffix = '2025'; break;
-    case '2026': quoteSet = quotes2026; batchSuffix = '2026'; break;
-    case '2027': quoteSet = quotes2027; batchSuffix = '2027'; break;
-    case 'ol':   quoteSet = quotesOL; batchSuffix = 'OL';   break;
-  }
-  const quoteKeys = Object.keys(quoteSet);
-  const quoteIndex = (dayOfYear - 1) % quoteKeys.length;
-  const quoteKey = quoteKeys[quoteIndex];
-  const quoteElement = document.getElementById(`dailyQuote${batchSuffix}`);
-  const quoteNumberElement = document.getElementById(`quoteNumber${batchSuffix}`);
-  if (quoteElement) quoteElement.textContent = quoteSet[quoteKey];
-  if (quoteNumberElement) {
-    const examType = currentBatch === 'ol' ? 'O/L' : 'A/L';
-    const year = currentBatch === 'ol' ? '2025' : currentBatch;
-    quoteNumberElement.textContent = `Quote #${quoteKey} • ${examType} ${year} • ${today.toLocaleDateString()}`;
-  }
-}
-
-/* ---------- Tile animation ---------- */
-function addTileAnimation(tileId) {
-  const tile = document.getElementById(tileId);
-  if (!tile) return;
-  tile.classList.add('tile-animate');
-  setTimeout(() => tile.classList.remove('tile-animate'), 2000);
-}
-
-/* ---------- Countdown ---------- */
-function updateCountdown() {
-  const now = new Date();
-  const batches = [
-    { year: '2025', target: targetDate2025, studyStart: studyStartDate2025 },
-    { year: '2026', target: targetDate2026, studyStart: studyStartDate2026 },
-    { year: '2027', target: targetDate2027, studyStart: studyStartDate2027 },
-    { year: 'OL',   target: targetDateOL,   studyStart: studyStartDateOL }
-  ];
-  batches.forEach(batch => {
-    let diff = batch.target - now;
-    if (diff < 0) diff = 0;
-    const secs = Math.floor(diff / 1000) % 60;
-    const mins = Math.floor(diff / (1000 * 60)) % 60;
-    const hrs  = Math.floor(diff / (1000 * 60 * 60)) % 24;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const newValues = {
-      [`days${batch.year}`]: String(days).padStart(2,'0'),
-      [`hours${batch.year}`]: String(hrs).padStart(2,'0'),
-      [`minutes${batch.year}`]: String(mins).padStart(2,'0'),
-      [`seconds${batch.year}`]: String(secs).padStart(2,'0')
-    };
-    Object.keys(newValues).forEach(key => {
-      const element = document.getElementById(key);
-      if (element && element.textContent !== newValues[key]) {
-        element.textContent = newValues[key];
-        const tileId = key.replace(key.slice(-4), `Tile${batch.year}`);
-        addTileAnimation(tileId);
-      }
-    });
-    const daysPassedElem = document.getElementById(`daysPassed${batch.year}`);
-    if (daysPassedElem) {
-      const daysPassed = Math.floor((now - batch.studyStart) / (1000 * 60 * 60 * 24));
-      daysPassedElem.textContent = Math.max(0, daysPassed);
-    }
-  });
-}
-
-/* ---------- Current Time ---------- */
-function updateCurrentTime() {
-  const now = new Date();
-  const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-  const el = document.getElementById('currentTime');
-  if (el) el.textContent = timeString;
-}
-
-/* ---------- Subject Selection for A/L ---------- */
-document.addEventListener('change', function(e) {
-  if (e.target && e.target.matches('input[type="checkbox"].subject-checkbox')) {
-    updateSelectedCount();
-  }
-});
-function updateSelectedCount() {
-  const selected = document.querySelectorAll('input[type="checkbox"].subject-checkbox:checked');
-  const count = selected.length;
-  const el = document.getElementById('selectedCount');
-  if (el) el.textContent = `${count} subject${count !== 1 ? 's' : ''} selected`;
-  const showBtn = document.getElementById('showExamDatesBtn');
-  if (showBtn) {
-    if (count >= 3) showBtn.classList.remove('disabled'); else showBtn.classList.add('disabled');
-  }
-}
-function clearSelection() {
-  document.querySelectorAll('input[type="checkbox"].subject-checkbox').forEach(cb => cb.checked = false);
-  updateSelectedCount();
-}
-
-/* ---------- Subject Selection for O/L ---------- */
-function updateSelectedCountOL() {
-  const selected = document.querySelectorAll('#sectionOL input[type="checkbox"]:checked');
-  const count = selected.length;
-  const el = document.getElementById('selectedCountOL');
-  if (el) el.textContent = `${count} subject${count !== 1 ? 's' : ''} selected`;
-  const showBtn = document.getElementById('showExamDatesBtnOL');
-  if (showBtn) {
-    if (count >= 1) showBtn.classList.remove('disabled'); else showBtn.classList.add('disabled');
-  }
-}
-
-function clearSelectionOL() {
-  document.querySelectorAll('#sectionOL input[type="checkbox"]').forEach(cb => cb.checked = false);
-  updateSelectedCountOL();
-}
-
-function showMyExamDatesOL() {
-  showAlert('📅', 'O/L Exam Schedule', 'Your personalized O/L exam schedule will be displayed here soon!');
-}
-
-// 添加O/L科目选择的事件监听
-document.addEventListener('change', function(e) {
-  if (e.target && e.target.matches('#sectionOL input[type="checkbox"]')) {
-    updateSelectedCountOL();
-  }
-});
-
-/* ---------- Show/Copy/Download placeholders ---------- */
-function showMyExamDates() {
-  showAlert('📅', 'A/L Timetable', 'Official A/L timetable not released yet. Will update when available.');
-}
-function copyMySchedule() {
-  showAlert('📅', 'Timetable Not Available', 'The A/L timetable has not been released yet.');
-}
-async function downloadScheduleImage() {
-  showAlert('📷', 'Timetable Not Available', 'The A/L timetable has not been released yet.');
-}
-
-/* ---------- Clipboard fallback ---------- */
-function fallbackCopy(text) {
-  const tempTextarea = document.createElement('textarea');
-  tempTextarea.value = text;
-  document.body.appendChild(tempTextarea);
-  tempTextarea.select();
-  document.execCommand('copy');
-  document.body.removeChild(tempTextarea);
-  showCopyConfirmation();
-}
-function showCopyConfirmation() {
-  const copyBtn = document.querySelector('.popup-btn:not(.close-btn):not(.download-btn)');
-  if (!copyBtn) return;
-  const originalText = copyBtn.textContent;
-  copyBtn.textContent = '✅ Copied!';
-  copyBtn.style.background = 'var(--success)';
-  setTimeout(() => { copyBtn.textContent = originalText; copyBtn.style.background = ''; }, 2000);
-}
-
-/* ---------- Popup close handlers ---------- */
-function closeExamDatesPopup() {
-  const popup = document.getElementById('examDatesPopup');
-  if (popup) popup.classList.remove('show');
-}
-document.addEventListener('click', function(e) {
-  if (e.target.classList && e.target.classList.contains('popup-overlay')) {
-    closeExamDatesPopup();
-    closeContactPopup();
-  }
-  if (e.target.classList && e.target.classList.contains('alert-overlay')) {
-    closeAlert();
-  }
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closeExamDatesPopup();
-    closeAlert();
-    closeContactPopup();
-  }
-});
-
-/* ---------- WhatsApp integration ---------- */
-const BOT_PHONE = '94705179349';
-const COMPLAINT_PHONE = '94768164223';
-function openWhatsApp(number, message) {
-  const webLink = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
-  window.open(webLink, '_blank');
-}
-const waEl = document.getElementById('waChat');
-if (waEl) waEl.addEventListener('click', () => {
-  const message = `Hi 👋\n🤖 A/L Exam Countdown Bot වලට ඔබව සාදරයෙන් පිළිගනිමු!\n🎯 A/L Exam countdown updates!\n⏰ Daily countdown updates\n💡 Motivational quotes\n📊 Study progress tracking\n🏆 Achievement system\n📚 Support for 2025, 2026 & 2027 batches\nකරුණාකර "activate" බටන් එක දබන්න.\n> sadeepa and shamika`;
-  openWhatsApp(BOT_PHONE, message);
-});
-function openComplaintWhatsApp() {
-  const message = `📝 Subject/Time Complaint Report 📝\n🎯 A/L 2026 Exam Timetable Complaint\n\nකරුණාකර complaint එක දාන්න:\n❗ Missing Subject\n⏰ Wrong Time\n📅 Wrong Date\n🔄 Other Issues\n\n- Team Sadeepa & Shamika`;
-  openWhatsApp(COMPLAINT_PHONE, message);
-}
-
-/* ---------- Contact form (web3forms) ---------- */
-const form = document.getElementById('contactForm');
-const submitBtn = document.getElementById('submitBtn');
-const statusMessage = document.getElementById('statusMessage');
-if (form) {
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
-    if (statusMessage) statusMessage.classList.remove('show','success','error');
-    const formData = new FormData(form);
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','Accept':'application/json'},
-        body: json
-      });
-      const result = await response.json();
-      if (result.success) {
-        if (statusMessage) { statusMessage.textContent = '✓ Message sent successfully!'; statusMessage.classList.add('success','show'); }
-        form.reset();
-      } else {
-        if (statusMessage) { statusMessage.textContent = '✗ Something went wrong. Please try again.'; statusMessage.classList.add('error','show'); }
-      }
-    } catch (error) {
-      if (statusMessage) { statusMessage.textContent = '✗ Network error. Please check your connection.'; statusMessage.classList.add('error','show'); }
-    } finally {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
-      setTimeout(() => { if (statusMessage) statusMessage.classList.remove('show'); }, 5000);
-    }
-  });
-}
-
-/* ---------- Update Notification System ---------- */
-function showUpdateNotification() {
-  const notification = document.getElementById('updateNotification');
-  if (notification) {
-    notification.classList.add('show');
-    
-    // 10秒后自动隐藏
-    setTimeout(() => {
-      closeUpdateNotification();
-    }, 10000);
-  }
-}
-
-function closeUpdateNotification() {
-  const notification = document.getElementById('updateNotification');
-  if (notification) {
-    notification.classList.remove('show');
-  }
-}
-
-function viewUpdateDetails() {
-  closeUpdateNotification();
-  showAlert('🎉', 'Special Message', 
-    '*ඔන්න හෙට තමයි ඔයාලගෙ දවස. හැමෝම තමන්ට පුලුවන් උපරිමය කරන්න 💪🔥*\n\n' +
-    '*මේ ටික කාලෙට Exam Countdown Bot එක්ක එකතු වෙලා හිටපු ඔයාලා ඔක්කොටම Thank You ❤️*\n\n' +
-    'අඩුපාඩු තියෙන්න ඇති වැරදීම් තියෙන්න ඇති අපි ඒවා ඉදිරියට හරි ගස්සනවා 💗✨\n\n' +
-    '◈────────────────◈\n\n' +
-    '🚀 Owner : Sadeepa\n' +
-    '👨‍💻 Coder : Shamika'
-  );
-                                                      }
-
-/* ---------- Initialization ---------- */
-function initializeApp() {
-  // 检测默认批次
-  const defaultBatch = detectDefaultBatch();
-  switchBatch(defaultBatch);
-  
-  getDailyQuote();
-  updateCountdown();
-  updateCurrentTime();
-  
-  // 每次页面加载都显示更新通知
-  showUpdateNotification();
-}
-setInterval(updateCountdown, 1000);
-setInterval(updateCurrentTime, 1000);
-setInterval(getDailyQuote, 3600000);
-updateSelectedCount();
-updateSelectedCountOL();
-initializeApp();
-console.log('🚀 A/L & O/L Exam Countdown (Complete Version) initialized!');
-</script>
-</body>
-</html>
