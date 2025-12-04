@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A/L & O/L Exam Countdown</title>
-    <link rel="icon" href="https://i.ibb.co/jZJK1jqK/exam-bot-dp2.png" type="image/png">
+    <title id="pageTitle">A/L & O/L Exam Countdown</title>
+    <link rel="icon" id="favicon" href="https://i.ibb.co/jZJK1jqK/exam-bot-dp2.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&display=swap" rel="stylesheet">
@@ -56,10 +55,10 @@
                 <div class="logo" id="mainLogo">
                     <img src="https://i.ibb.co/jZJK1jqK/exam-bot-dp2.png" alt="Exam Icon" style="width: 70%; height: 70%; object-fit: contain;">
                 </div>
-                <h1>A/L & O/L Exam Countdown</h1>
-                <p class="lead">Advanced Level and Ordinary Level Exam Countdown</p>
+                <h1 id="siteTitle">A/L & O/L Exam Countdown</h1>
+                <p class="lead" id="siteDescription">Advanced Level and Ordinary Level Exam Countdown</p>
             </header>
-            <div class="batch-selector">
+            <div class="batch-selector" id="batchSelector">
                 <button class="batch-btn disabled" data-batch="2025">📚 2025 A/L</button>
                 <button class="batch-btn batch-btn-2026 active" data-batch="2026">🎯 2026 A/L</button>
                 <button class="batch-btn batch-btn-2027" data-batch="2027">🎓 2027 A/L</button>
@@ -257,13 +256,13 @@
                 <h3 style="font-size: 18px; color: var(--accent2026); margin: 0 0 10px;">A/L 2026 Subject Selection</h3>
                 <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Select subjects for your timetable</p>
             </div>
-            <div class="timetable-notice">
+            <div class="timetable-notice" id="timetableNotice">
                 <div class="timetable-notice-icon">📅</div>
-                <h3 class="timetable-notice-title">A/L 2026 Timetable Not Released Yet</h3>
-                <p class="timetable-notice-text">The official A/L 2026 exam timetable has not been released by the Department of Examinations yet.</p>
-                <p class="timetable-notice-subtext">We will update it once officially released. Please check back later.</p>
+                <h3 class="timetable-notice-title" id="timetableNoticeTitle">A/L 2026 Timetable Not Released Yet</h3>
+                <p class="timetable-notice-text" id="timetableNoticeText">The official A/L 2026 exam timetable has not been released by the Department of Examinations yet.</p>
+                <p class="timetable-notice-subtext" id="timetableNoticeSubtext">We will update it once officially released. Please check back later.</p>
             </div>
-            <div class="subjects-grid">
+            <div class="subjects-grid" id="subjectsGrid">
                 <div class="subject-category">
                     <h4 class="category-title">Mathematics</h4>
                     <div class="subjects-list">
@@ -387,7 +386,7 @@
             <div class="comments-header">
                 <h3 class="comments-title">
                     <i class="fas fa-comments"></i>
-            Comments
+                    Comments
                 </h3>
                 <span class="comments-count" id="commentsCount">0 Comments</span>
             </div>
@@ -409,7 +408,7 @@
                 </div>
             </div>
             
-            <div class="comment-form">
+            <div class="comment-form" id="commentForm">
                 <textarea 
                     class="comment-input" 
                     id="commentInput" 
@@ -487,7 +486,7 @@
         
         <div class="footer">
             <div class="footer-text">
-                Powered by <span class="footer-brand">Sadeepa & Shamika</span> • 
+                Powered by <span class="footer-brand" id="footerBrand">Sadeepa & Shamika</span> • 
                 <span id="currentTime"></span>
             </div>
         </div>
@@ -506,7 +505,6 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-
     <!-- Side Menu -->
     <button id="menuBtn" class="menu-toggle-btn">
         <i class="fas fa-bars"></i>
@@ -518,6 +516,10 @@
             <button class="side-menu-close" onclick="closeSideMenu()">×</button>
         </div>
         <div class="side-menu-content">
+            <button class="menu-item" onclick="openAdminPanel(); closeSideMenu();" id="adminMenuItem" style="display: none;">
+                <i class="fas fa-cog"></i>
+                <span class="menu-item-text">Admin Panel</span>
+            </button>
             <button class="menu-item" onclick="openContactPopup(); closeSideMenu();">
                 <i class="fas fa-envelope"></i>
                 <span class="menu-item-text">Contact via Email</span>
@@ -570,38 +572,193 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Admin Panel -->
+    <div id="adminLoginPanel" class="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2 class="admin-title">
+                    <i class="fas fa-user-shield"></i>
+                    Admin Login
+                </h2>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        // Side Menu functionality
-        const menuBtn = document.getElementById('menuBtn');
-        const sideMenu = document.getElementById('sideMenu');
-
-        function openSideMenu() {
-            sideMenu.classList.add('show');
-        }
-
-        function closeSideMenu() {
-            sideMenu.classList.remove('show');
-        }
-
-        if (menuBtn && sideMenu) {
-            menuBtn.addEventListener('click', openSideMenu);
+    <div id="adminMainPanel" class="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2 class="admin-title">
+                    <i class="fas fa-cog"></i>
+                    Admin Panel
+                </h2>
+                <button class="btn btn-secondary" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
             
-            // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target) && sideMenu.classList.contains('show')) {
-                    closeSideMenu();
-                }
-            });
-        }
+            <!-- Website Settings -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">
+                    <i class="fas fa-cogs"></i>
+                    Website Settings
+                </h3>
+                
+                <div class="form-group">
+                    <label for="siteTitleInput">Site Title</label>
+                    <input type="text" id="siteTitleInput" placeholder="A/L & O/L Exam Countdown">
+                </div>
+                
+                <div class="form-group">
+                    <label for="siteDescriptionInput">Site Description</label>
+                    <textarea id="siteDescriptionInput" rows="2">Advanced Level and Ordinary Level Exam Countdown</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="whatsappNumberInput">WhatsApp Bot Number</label>
+                    <input type="text" id="whatsappNumberInput" placeholder="94705179349">
+                </div>
+                
+                <div class="form-group">
+                    <label for="footerBrandInput">Footer Brand</label>
+                    <input type="text" id="footerBrandInput" placeholder="Sadeepa & Shamika">
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveWebsiteSettings()">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+            
+            <!-- Exam Dates Management -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Exam Dates Management
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="examYearSelect">Exam Year</label>
+                        <select id="examYearSelect">
+                            <option value="2025">2025 A/L</option>
+                            <option value="2026">2026 A/L</option>
+                            <option value="2027">2027 A/L</option>
+                            <option value="ol">2025 O/L</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="examDateInput">Exam Date</label>
+                        <input type="date" id="examDateInput">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="examMonthInput">Exam Month (for display)</label>
+                    <input type="text" id="examMonthInput" placeholder="August">
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveExamDate()">
+                    <i class="fas fa-save"></i> Save Exam Date
+                </button>
+                
+                <div id="examDatesList" class="exam-dates-list">
+                    <!-- Current dates will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- Quotes Management -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">
+                    <i class="fas fa-quote-right"></i>
+                    Motivational Quotes Management
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quoteYearSelect">Quote Year</label>
+                        <select id="quoteYearSelect">
+                            <option value="2025">2025 A/L</option>
+                            <option value="2026">2026 A/L</option>
+                            <option value="2027">2027 A/L</option>
+                            <option value="ol">2025 O/L</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quoteNumberInput">Quote Number</label>
+                        <input type="text" id="quoteNumberInput" placeholder="01">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quoteTextInput">Quote Text</label>
+                    <textarea id="quoteTextInput" rows="3" placeholder="Enter motivational quote..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveQuote()">
+                    <i class="fas fa-save"></i> Save Quote
+                </button>
+                
+                <div id="quotesList" class="quotes-list">
+                    <!-- Current quotes will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- Batch Management -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">
+                    <i class="fas fa-users"></i>
+                    Batch Management
+                </h3>
+                
+                <div class="form-group">
+                    <label for="batchStatus2025">2025 A/L Status</label>
+                    <select id="batchStatus2025">
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="batchStatus2026">2026 A/L Status</label>
+                    <select id="batchStatus2026">
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="batchStatus2027">2027 A/L Status</label>
+                    <select id="batchStatus2027">
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="batchStatusOL">2025 O/L Status</label>
+                    <select id="batchStatusOL">
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveBatchStatus()">
+                    <i class="fas fa-save"></i> Save Batch Status
+                </button>
+            </div>
+        </div>
+    </div>
 
-        // Contact button functionality
-        const contactBtn = document.createElement('button');
-        contactBtn.className = 'floating-contact-btn';
-        contactBtn.innerHTML = '<i class="fas fa-envelope"></i>';
-        contactBtn.onclick = openContactPopup;
-        document.body.appendChild(contactBtn);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
