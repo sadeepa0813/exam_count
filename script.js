@@ -1,4 +1,4 @@
-/* --------------------------- A/L & O/L Exam Countdown - Enhanced Version --------------------------- */
+/* --------------------------- A/L & O/L Exam Countdown - Complete Admin Version --------------------------- */
 
 // Configuration
 const CONFIG = {
@@ -11,17 +11,39 @@ const CONFIG = {
         BOT: '94705179349',
         COMPLAINT: '94768164223'
     },
-    EXAM_DATES: {
+    ADMIN: {
+        USERNAME: 'admin',
+        PASSWORD: 'exam2024'
+    },
+    DEFAULT_EXAM_DATES: {
         '2025': new Date('2025-11-10T00:00:00'),
         '2026': new Date('2026-08-03T00:00:00'),
         '2027': new Date('2027-08-02T00:00:00'),
         'ol': new Date('2026-02-17T00:00:00')
     },
-    STUDY_STARTS: {
+    DEFAULT_STUDY_STARTS: {
         '2025': new Date('2024-01-01'),
         '2026': new Date('2025-01-01'),
         '2027': new Date('2026-01-01'),
         'ol': new Date('2024-01-01')
+    },
+    DEFAULT_QUOTES: {
+        "2025": {
+            "01": "ජීවිතය එය මත රඳා පවතිනවාක් මෙන් ඔබේ සිහින හඹා යන්න ✨",
+            "02": "සාර්ථකත්වය කව්රුත් ලබා දෙන්නේ නැත, එබැවින් එය උපයා ගැනීමට උත්සාහ කරන්න! 🌟"
+        },
+        "2026": {
+            "01": "අනාගතය ඔබට අයත්! මේ මොහොතේ සිට පටන් ගන්න ✨",
+            "02": "2026 A/L ජයග්‍රහණය සඳහා ඔබේ ගමන ආරම්භ කරන්න! 🎯"
+        },
+        "2027": {
+            "01": "ප්‍රථම පියවර තමයි වඩාම වැදගත්! ආරම්භ කරන්න 🎯",
+            "02": "2027 A/L සඳහා දිගු ගමනක් ආරම්භ කරන්න. සෑම පියවරකම වැදගත් ✨"
+        },
+        "ol": {
+            "01": "O/L තමයි ඔබේ අනාගතේ පදනම! දැන්ම ආරම්භ කරන්න 📚",
+            "02": "හොඳ මූලික පදනමක් A/L සඳහා වැදගත්. O/L වලින් ජයගන්න! 🎯"
+        }
     }
 };
 
@@ -36,6 +58,22 @@ let likedComments = new Set();
 let currentUser = '';
 let replyingTo = null;
 let editingComment = null;
+let isAdminLoggedIn = false;
+let websiteSettings = {
+    siteTitle: 'A/L & O/L Exam Countdown',
+    siteDescription: 'Advanced Level and Ordinary Level Exam Countdown',
+    whatsappNumber: '94705179349',
+    footerBrand: 'Sadeepa & Shamika'
+};
+let examDates = {...CONFIG.DEFAULT_EXAM_DATES};
+let studyStarts = {...CONFIG.DEFAULT_STUDY_STARTS};
+let quotes = {...CONFIG.DEFAULT_QUOTES};
+let batchStatus = {
+    '2025': 'enabled',
+    '2026': 'enabled',
+    '2027': 'enabled',
+    'ol': 'enabled'
+};
 
 // Theme Toggle
 const themeToggle = document.getElementById('themeToggle');
@@ -143,13 +181,408 @@ function closeContactPopup() {
     document.body.style.overflow = '';
 }
 
-const contactBtn = document.getElementById('contactBtn');
-if (contactBtn) contactBtn.addEventListener('click', openContactPopup);
+// Side Menu
+function openSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    if (sideMenu) sideMenu.classList.add('show');
+}
 
-const contactPopup = document.getElementById('contactPopup');
-if (contactPopup) {
-    contactPopup.addEventListener('click', function(e) {
-        if (e.target === this) closeContactPopup();
+function closeSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    if (sideMenu) sideMenu.classList.remove('show');
+}
+
+const menuBtn = document.getElementById('menuBtn');
+if (menuBtn) {
+    menuBtn.addEventListener('click', openSideMenu);
+}
+
+// Admin Panel Functions
+function openAdminPanel() {
+    const loginPanel = document.getElementById('adminLoginPanel');
+    if (loginPanel) {
+        loginPanel.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function loginAdmin() {
+    const username = document.getElementById('adminUsername').value;
+    const password = document.getElementById('adminPassword').value;
+    
+    if (username === CONFIG.ADMIN.USERNAME && password === CONFIG.ADMIN.PASSWORD) {
+        isAdminLoggedIn = true;
+        document.getElementById('adminLoginPanel').style.display = 'none';
+        document.getElementById('adminMainPanel').style.display = 'block';
+        loadAdminData();
+        showNotification('✅', 'Admin login successful!');
+    } else {
+        showNotification('❌', 'Invalid username or password!');
+    }
+}
+
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    document.getElementById('adminMainPanel').style.display = 'none';
+    document.getElementById('adminLoginPanel').style.display = 'none';
+    document.body.style.overflow = '';
+    showNotification('👋', 'Logged out successfully!');
+}
+
+async function loadAdminData() {
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Load website settings
+            if (data.websiteSettings) {
+                websiteSettings = {...websiteSettings, ...data.websiteSettings};
+                document.getElementById('siteTitleInput').value = websiteSettings.siteTitle;
+                document.getElementById('siteDescriptionInput').value = websiteSettings.siteDescription;
+                document.getElementById('whatsappNumberInput').value = websiteSettings.whatsappNumber;
+                document.getElementById('footerBrandInput').value = websiteSettings.footerBrand;
+                
+                // Update website with loaded settings
+                updateWebsiteUI();
+            }
+            
+            // Load exam dates
+            if (data.examDates) {
+                examDates = {...examDates, ...data.examDates};
+            }
+            
+            // Load quotes
+            if (data.quotes) {
+                quotes = {...quotes, ...data.quotes};
+            }
+            
+            // Load batch status
+            if (data.batchStatus) {
+                batchStatus = {...batchStatus, ...data.batchStatus};
+                document.getElementById('batchStatus2025').value = batchStatus['2025'];
+                document.getElementById('batchStatus2026').value = batchStatus['2026'];
+                document.getElementById('batchStatus2027').value = batchStatus['2027'];
+                document.getElementById('batchStatusOL').value = batchStatus['ol'];
+                updateBatchButtons();
+            }
+            
+            // Display current data
+            displayExamDates();
+            displayQuotes();
+        }
+    } catch (error) {
+        console.error('Error loading admin data:', error);
+        showNotification('❌', 'Failed to load admin data');
+    }
+}
+
+function updateWebsiteUI() {
+    // Update website title
+    document.getElementById('pageTitle').textContent = websiteSettings.siteTitle;
+    document.getElementById('siteTitle').textContent = websiteSettings.siteTitle;
+    document.getElementById('siteDescription').textContent = websiteSettings.siteDescription;
+    document.getElementById('footerBrand').textContent = websiteSettings.footerBrand;
+    
+    // Update WhatsApp number
+    CONFIG.WHATSAPP.BOT = websiteSettings.whatsappNumber;
+}
+
+async function saveWebsiteSettings() {
+    websiteSettings.siteTitle = document.getElementById('siteTitleInput').value;
+    websiteSettings.siteDescription = document.getElementById('siteDescriptionInput').value;
+    websiteSettings.whatsappNumber = document.getElementById('whatsappNumberInput').value;
+    websiteSettings.footerBrand = document.getElementById('footerBrandInput').value;
+    
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            data.websiteSettings = websiteSettings;
+            
+            const updateResponse = await fetch(BACKEND_PUT_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                    'X-Bin-Versioning': false
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (updateResponse.ok) {
+                updateWebsiteUI();
+                showNotification('✅', 'Website settings saved successfully!');
+            } else {
+                showNotification('❌', 'Failed to save settings');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving website settings:', error);
+        showNotification('❌', 'Error saving settings');
+    }
+}
+
+async function saveExamDate() {
+    const year = document.getElementById('examYearSelect').value;
+    const date = document.getElementById('examDateInput').value;
+    const month = document.getElementById('examMonthInput').value;
+    
+    if (!date || !month) {
+        showNotification('⚠️', 'Please fill all fields');
+        return;
+    }
+    
+    examDates[year] = new Date(date);
+    
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            data.examDates = examDates;
+            
+            const updateResponse = await fetch(BACKEND_PUT_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                    'X-Bin-Versioning': false
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (updateResponse.ok) {
+                displayExamDates();
+                showNotification('✅', 'Exam date saved successfully!');
+                document.getElementById('examDateInput').value = '';
+                document.getElementById('examMonthInput').value = '';
+            } else {
+                showNotification('❌', 'Failed to save exam date');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving exam date:', error);
+        showNotification('❌', 'Error saving exam date');
+    }
+}
+
+function displayExamDates() {
+    const examDatesList = document.getElementById('examDatesList');
+    if (!examDatesList) return;
+    
+    examDatesList.innerHTML = '';
+    
+    Object.keys(examDates).forEach(year => {
+        const date = examDates[year];
+        const dateItem = document.createElement('div');
+        dateItem.className = 'exam-date-item';
+        dateItem.innerHTML = `
+            <div class="exam-date-info">
+                <div class="exam-date-title">${year === 'ol' ? '2025 O/L' : year + ' A/L'}</div>
+                <div class="exam-date-details">${date.toLocaleDateString()}</div>
+            </div>
+            <div class="exam-date-actions">
+                <div class="icon-btn edit" onclick="editExamDate('${year}')">
+                    <i class="fas fa-edit"></i>
+                </div>
+            </div>
+        `;
+        examDatesList.appendChild(dateItem);
+    });
+}
+
+async function saveQuote() {
+    const year = document.getElementById('quoteYearSelect').value;
+    const number = document.getElementById('quoteNumberInput').value;
+    const text = document.getElementById('quoteTextInput').value;
+    
+    if (!number || !text) {
+        showNotification('⚠️', 'Please fill all fields');
+        return;
+    }
+    
+    if (!quotes[year]) {
+        quotes[year] = {};
+    }
+    
+    quotes[year][number] = text;
+    
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            data.quotes = quotes;
+            
+            const updateResponse = await fetch(BACKEND_PUT_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                    'X-Bin-Versioning': false
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (updateResponse.ok) {
+                displayQuotes();
+                showNotification('✅', 'Quote saved successfully!');
+                document.getElementById('quoteNumberInput').value = '';
+                document.getElementById('quoteTextInput').value = '';
+            } else {
+                showNotification('❌', 'Failed to save quote');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving quote:', error);
+        showNotification('❌', 'Error saving quote');
+    }
+}
+
+function displayQuotes() {
+    const quotesList = document.getElementById('quotesList');
+    if (!quotesList) return;
+    
+    quotesList.innerHTML = '';
+    
+    Object.keys(quotes).forEach(year => {
+        Object.keys(quotes[year]).forEach(number => {
+            const text = quotes[year][number];
+            const quoteItem = document.createElement('div');
+            quoteItem.className = 'quote-item';
+            quoteItem.innerHTML = `
+                <div class="quote-info">
+                    <div class="quote-title">${year === 'ol' ? '2025 O/L' : year + ' A/L'} - Quote #${number}</div>
+                    <div class="quote-details">${text}</div>
+                </div>
+                <div class="quote-actions">
+                    <div class="icon-btn edit" onclick="editQuote('${year}', '${number}')">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="icon-btn delete" onclick="deleteQuote('${year}', '${number}')">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            `;
+            quotesList.appendChild(quoteItem);
+        });
+    });
+}
+
+async function deleteQuote(year, number) {
+    if (!confirm('Are you sure you want to delete this quote?')) return;
+    
+    delete quotes[year][number];
+    
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            data.quotes = quotes;
+            
+            const updateResponse = await fetch(BACKEND_PUT_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                    'X-Bin-Versioning': false
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (updateResponse.ok) {
+                displayQuotes();
+                showNotification('✅', 'Quote deleted successfully!');
+            } else {
+                showNotification('❌', 'Failed to delete quote');
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting quote:', error);
+        showNotification('❌', 'Error deleting quote');
+    }
+}
+
+async function saveBatchStatus() {
+    batchStatus['2025'] = document.getElementById('batchStatus2025').value;
+    batchStatus['2026'] = document.getElementById('batchStatus2026').value;
+    batchStatus['2027'] = document.getElementById('batchStatus2027').value;
+    batchStatus['ol'] = document.getElementById('batchStatusOL').value;
+    
+    try {
+        const response = await fetch(BACKEND_GET_URL, {
+            headers: {
+                'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                'X-Bin-Meta': false
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            data.batchStatus = batchStatus;
+            
+            const updateResponse = await fetch(BACKEND_PUT_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.BACKEND.API_KEY,
+                    'X-Bin-Versioning': false
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (updateResponse.ok) {
+                updateBatchButtons();
+                showNotification('✅', 'Batch status saved successfully!');
+            } else {
+                showNotification('❌', 'Failed to save batch status');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving batch status:', error);
+        showNotification('❌', 'Error saving batch status');
+    }
+}
+
+function updateBatchButtons() {
+    Object.keys(batchStatus).forEach(batch => {
+        const btn = document.querySelector(`[data-batch="${batch}"]`);
+        if (btn) {
+            if (batchStatus[batch] === 'disabled') {
+                btn.classList.add('disabled');
+            } else {
+                btn.classList.remove('disabled');
+            }
+        }
     });
 }
 
@@ -168,78 +601,91 @@ function detectDefaultBatch() {
     }
 }
 
-// Quotes
-const quotes = {
-  "01": "ජීවිතය එය මත රඳා පවතිනවාක් මෙන් ඔබේ සිහින හඹා යන්න ✨",
-  "02": "සාර්ථකත්වය කව්රුත් ලබා දෙන්නේ නැත, එබැවින් එය උපයා ගැනීමට උත්සාහ කරන්න! 🌟",
-  "03": "ඔබට හැකි බව විශ්වාස කරන්න 🌟",
-  "04": "ගමන දුෂ්කර විය හැක, නමුත් ඉහළින් ඇති දසුන සුන්දර වනු ඇත 🏔",
-  "05": "ඔබ තුළ තියෙන දේ විශ්වාස කරන්න 💫",
-  "06": "ඔබ දන්නා ප්‍රමාණයට වඩා ඔබට හැකියාව ඇත 🍀⭐️",
-  "07": "අභියෝග ජීවිතය රසවත් කරයි. ඒවා ජය ගැනීම ජීවිතය අර්ථවත් කරයි 🔥💫",
-  "08": "සෑම දිනකම ඔබට දියුණු වීමට අවස්ථාව. උපරිම ප්‍රයෝජන ගන්න 😎💪",
-  "09": "සෑම දුෂ්කරතාවක්ම මැද අවස්ථාවක් තිබේ 🤛",
-  "10": "ජයග්‍රහණයේ උද්යෝගයට වඩා පරාජයේ බිය වැඩි වීමට ඉඩ නොදෙන්න 🫵",
-  "11": "අගෝස්තු 2026 ඔබේ ජයග්‍රහණයේ මාසයයි! සූදානම් වන්න 🎯",
-  "12": "A/L 2026 සිසුවෙකු ලෙස ඔබ අද ඉතිහාසයක් රචනා කරනවා 📚",
-  "13": "කාලය සීමිතයි, නමුත් ඔබේ හැකියාව අසීමිතයි 🚀",
-  "14": "පිටු අධ්‍යයනය නොවෙයි, අර්ථය අවබෝධ කර ගැනීම වැදගත් 🧠",
-  "15": "සෑම විභාගයකම ඔබේ අනාගතයේ දොරක් විවෘත වේ 🚪✨"
-};
+// Get Daily Quote
+function getDailyQuote() {
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    
+    let quoteSet = quotes[currentBatch] || CONFIG.DEFAULT_QUOTES[currentBatch] || {};
+    let batchSuffix = currentBatch === 'ol' ? 'OL' : currentBatch;
+    
+    const quoteKeys = Object.keys(quoteSet);
+    if (quoteKeys.length === 0) {
+        // Fallback to default quotes if no quotes exist
+        quoteSet = CONFIG.DEFAULT_QUOTES[currentBatch] || {};
+        quoteKeys.length = Object.keys(quoteSet).length;
+    }
+    
+    const quoteIndex = (dayOfYear - 1) % Math.max(quoteKeys.length, 1);
+    const quoteKey = quoteKeys[quoteIndex] || "01";
+    const quote = quoteSet[quoteKey] || "Loading motivational quote...";
+    
+    const quoteElement = document.getElementById(`dailyQuote${batchSuffix}`);
+    const quoteNumberElement = document.getElementById(`quoteNumber${batchSuffix}`);
+    
+    if (quoteElement) quoteElement.textContent = quote;
+    if (quoteNumberElement) {
+        const examType = currentBatch === 'ol' ? 'O/L' : 'A/L';
+        const year = currentBatch === 'ol' ? '2025' : currentBatch;
+        quoteNumberElement.textContent = `Quote #${quoteKey} • ${examType} ${year} • ${today.toLocaleDateString()}`;
+    }
+}
 
-const quotes2026 = {
-  "01": "අනාගතය ඔබට අයත්! මේ මොහොතේ සිට පටන් ගන්න ✨",
-  "02": "2026 A/L ජයග්‍රහණය සඳහා ඔබේ ගමන ආරම්භ කරන්න! 🎯",
-  "03": "සාර්ථකත්වයට කාලය තිබේ, නමුත් කුසලතාව අවශ්‍යයි 🌟",
-  "04": "ඔබේ ඉලක්කය 2026, නමුත් සූදානම අදම ආරම්භ කරන්න 🚀",
-  "05": "මීට වර්ෂයකට වඩා කාලයක් තිබේ, නමුත් සෑම දිනම වැදගත් 💫",
-  "06": "2026 batch එකේ champion කෙනෙක් වන්න! 🏆",
-  "07": "වැඩි කාලයක් = වැඩි හැකියාවන්. නිසියාකාරව භාවිතා කරන්න 📚",
-  "08": "ඔබේ අනාගතය ඔබේ අතේ. 2026 ජයග්‍රහණය කරන්න! 🔥",
-  "09": "සෑම දිනකම අද වඳා හොඳ කෙනෙක් වන්න. 2026 සඳහා සූදානම් වන්න ⭐",
-  "10": "කාලය ඔබේ මිත්‍රයා. එය නිසියාකාරව පරිහරණය කරන්න 💪",
-  "11": "2026 අගෝස්තු මාසය ඔබේ ජයග්‍රහණයේ මාසයයි! 🎯",
-  "12": "අද ආරම්භ කරන අධ්‍යයනය හෙට විශ්වවිද්‍යාලයේ අවස්ථාව බවට පත්වේ 🎓",
-  "13": "කාලය ඔබේ පාර්ශ්වයේ ඇත. හොඳින් සැලසුම් කරන්න 📋",
-  "14": "ප්‍රබල මූලික පදනමක් තනා ගන්න. A/L සඳහා ඒක වැදගත් 🏗️",
-  "15": "සෑම විභාගයටම සූදානම් වන්න, නමුත් 2026 A/L ප්‍රමුඛත්වය දෙන්න 🥇"
-};
+// Tile animation
+function addTileAnimation(tileId) {
+    const tile = document.getElementById(tileId);
+    if (!tile) return;
+    tile.classList.add('tile-animate');
+    setTimeout(() => tile.classList.remove('tile-animate'), 2000);
+}
 
-const quotes2027 = {
-  "01": "ප්‍රථම පියවර තමයි වඩාම වැදගත්! ආරම්භ කරන්න 🎯",
-  "02": "2027 A/L සඳහා දිගු ගමනක් ආරම්භ කරන්න. සෑම පියවරකම වැදගත් ✨",
-  "03": "අවුරුදු දෙකක් කාලයක් ඇත - මෙය ඔබේ හොඳම වාසියයි! 🌟",
-  "04": "මුල සිටම සැලසුම් කරන්න. 2027 ජයග්‍රහණය අද ආරම්භ වේ! 📋",
-  "05": "කාලය ඔබේ පාර්ශ්වයේ ඇත. එය සාර්ථකව භාවිතා කරන්න ⏰",
-  "06": "සෑම දිනකම ඉදිරියට පියවරක්. 2027 ඔබේ වර්ෂයයි! 🚀",
-  "07": "දිගු ගමන අඩු වේගයෙන් ගත යුතුයි. ස්ථායී වන්න 🐢",
-  "08": "අනාගත ජයග්‍රාහකයා අදම ආරම්භ කරයි 🏆",
-  "09": "වර්ෂ දෙකක කාලය = අනන්ත හැකියාවන්. ඒවා පරිහරණය කරන්න 💎",
-  "10": "2027 A/L batch ප්‍රමුඛයා වන්න! ඔබට පුළුවන් 👑",
-  "11": "කාලය ප්‍රමාණවත්, නමුත් සැලසුම් අත්‍යවශ්‍යයි 📅",
-  "12": "මුල සිට හොඳ පුරුදු ගොඩ නගන්න. ඒක 2027 දක්වා උදව් කරයි 🌱",
-  "13": "දිනයන්ට කල් දාන්න එපා ⚠️",
-  "14": "සෑම දිනකම අලුත් දෙයක් ඉගෙන ගන්න. 📚",
-  "15": "2027 අගෝස්තු වන විටට ඔබ සම්පූර්ණයෙන් සූදානම් වී සිටිය යුතුයි 🎯"
-};
+// Countdown
+function updateCountdown() {
+    const now = new Date();
+    
+    Object.keys(examDates).forEach(batch => {
+        const year = batch === 'ol' ? 'OL' : batch;
+        const target = examDates[batch];
+        const studyStart = studyStarts[batch];
+        
+        let diff = target - now;
+        if (diff < 0) diff = 0;
+        const secs = Math.floor(diff / 1000) % 60;
+        const mins = Math.floor(diff / (1000 * 60)) % 60;
+        const hrs  = Math.floor(diff / (1000 * 60 * 60)) % 24;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        
+        const newValues = {
+            [`days${year}`]: String(days).padStart(2,'0'),
+            [`hours${year}`]: String(hrs).padStart(2,'0'),
+            [`minutes${year}`]: String(mins).padStart(2,'0'),
+            [`seconds${year}`]: String(secs).padStart(2,'0')
+        };
+        
+        Object.keys(newValues).forEach(key => {
+            const element = document.getElementById(key);
+            if (element && element.textContent !== newValues[key]) {
+                element.textContent = newValues[key];
+                const tileId = key.replace(key.slice(-4), `Tile${year}`);
+                addTileAnimation(tileId);
+            }
+        });
+        
+        const daysPassedElem = document.getElementById(`daysPassed${year}`);
+        if (daysPassedElem) {
+            const daysPassed = Math.floor((now - studyStart) / (1000 * 60 * 60 * 24));
+            daysPassedElem.textContent = Math.max(0, daysPassed);
+        }
+    });
+}
 
-const quotesOL = {
-  "01": "O/L තමයි ඔබේ අනාගතේ පදනම! දැන්ම ආරම්භ කරන්න 📚",
-  "02": "හොඳ මූලික පදනමක් A/L සඳහා වැදගත්. O/L වලින් ජයගන්න! 🎯",
-  "03": "සාමාන්‍ය පෙර විභාගය - ඔබේ සාර්ථකත්වයේ ප්‍රථම පියවර ✨",
-  "04": "O/L ප්‍රතිඵල හොඳ නම්, A/L වලට සූදානම් වීම පහසු වේ 🌟",
-  "05": "සෑම විෂයකටම සමාන අවධානයක් දෙන්න. O/L වල සියල්ල වැදගත් 📖",
-  "06": "2025 O/L batch ප්‍රමුඛයා වන්න! ඔබේ කාලයයි 🏆",
-  "07": "ප්‍රථම වරට සම්මත වෙන්න. නැවත සඳුදා තරගයක් නෙවෙයි 💪",
-  "08": "O/L සාර්ථකත්වය A/L සාර්ථකත්වයට මග පාදයි 🚀",
-  "09": "පළමු විශාල ජයග්‍රහණය O/L වලින් ආරම්භ වේ 🎊",
-  "10": "හොඳ ප්‍රතිලයක් ලබා ගෙන ඔබේ පවුලේ ගෞරවය වර්ධනය කරන්න 💎",
-  "11": "O/L සම්මත වීම අනිවාර්යයි, A/L යාම අභිලාෂයයි 🎓",
-  "12": "9 විෂයටම සමානව අවධානය දෙන්න. සියල්ල වැදගත් ⚖️",
-  "13": "2025 දෙසැම්බර් මාසය ඔබේ පළමු විශාල ජයග්‍රහණයේ මාසයයි 🎯",
-  "14": "grade 6-9 දක්වා ඉගෙන ගත් සියල්ල O/L වලට අදාළයි 📝",
-  "15": "පරීක්ෂණ ප්‍රශ්න වලට වැඩිපුර කාලය වෙන් කරන්න 🔬"
-};
+// Current Time
+function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const el = document.getElementById('currentTime');
+    if (el) el.textContent = timeString;
+}
 
 // Batch Switch UI
 function switchBatch(batch) {
@@ -308,7 +754,7 @@ function showBatchToast(batch) {
     }
 
     const now = new Date();
-    const targetDate = CONFIG.EXAM_DATES[batch];
+    const targetDate = examDates[batch];
     const diff = targetDate - now;
     const daysRemaining = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
     days.textContent = `${daysRemaining} days`;
@@ -322,94 +768,7 @@ function closeBatchToast() {
     if (toast) toast.classList.remove('show');
 }
 
-document.querySelectorAll('.batch-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        if (!btn.classList.contains('disabled')) switchBatch(btn.dataset.batch);
-    });
-});
-
-// Daily Quote
-function getDailyQuote() {
-    const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-    let quoteSet = quotes;
-    let batchSuffix = '2025';
-    switch (currentBatch) {
-        case '2025': quoteSet = quotes; batchSuffix = '2025'; break;
-        case '2026': quoteSet = quotes2026; batchSuffix = '2026'; break;
-        case '2027': quoteSet = quotes2026; batchSuffix = '2027'; break;
-        case 'ol':   quoteSet = quotes; batchSuffix = 'OL';   break;
-    }
-    const quoteKeys = Object.keys(quoteSet);
-    const quoteIndex = (dayOfYear - 1) % quoteKeys.length;
-    const quoteKey = quoteKeys[quoteIndex];
-    const quoteElement = document.getElementById(`dailyQuote${batchSuffix}`);
-    const quoteNumberElement = document.getElementById(`quoteNumber${batchSuffix}`);
-    if (quoteElement) quoteElement.textContent = quoteSet[quoteKey];
-    if (quoteNumberElement) {
-        const examType = currentBatch === 'ol' ? 'O/L' : 'A/L';
-        const year = currentBatch === 'ol' ? '2025' : currentBatch;
-        quoteNumberElement.textContent = `Quote #${quoteKey} • ${examType} ${year} • ${today.toLocaleDateString()}`;
-    }
-}
-
-// Tile animation
-function addTileAnimation(tileId) {
-    const tile = document.getElementById(tileId);
-    if (!tile) return;
-    tile.classList.add('tile-animate');
-    setTimeout(() => tile.classList.remove('tile-animate'), 2000);
-}
-
-// Countdown
-function updateCountdown() {
-    const now = new Date();
-    
-    Object.keys(CONFIG.EXAM_DATES).forEach(batch => {
-        const year = batch === 'ol' ? 'OL' : batch;
-        const target = CONFIG.EXAM_DATES[batch];
-        const studyStart = CONFIG.STUDY_STARTS[batch];
-        
-        let diff = target - now;
-        if (diff < 0) diff = 0;
-        const secs = Math.floor(diff / 1000) % 60;
-        const mins = Math.floor(diff / (1000 * 60)) % 60;
-        const hrs  = Math.floor(diff / (1000 * 60 * 60)) % 24;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        
-        const newValues = {
-            [`days${year}`]: String(days).padStart(2,'0'),
-            [`hours${year}`]: String(hrs).padStart(2,'0'),
-            [`minutes${year}`]: String(mins).padStart(2,'0'),
-            [`seconds${year}`]: String(secs).padStart(2,'0')
-        };
-        
-        Object.keys(newValues).forEach(key => {
-            const element = document.getElementById(key);
-            if (element && element.textContent !== newValues[key]) {
-                element.textContent = newValues[key];
-                const tileId = key.replace(key.slice(-4), `Tile${year}`);
-                addTileAnimation(tileId);
-            }
-        });
-        
-        const daysPassedElem = document.getElementById(`daysPassed${year}`);
-        if (daysPassedElem) {
-            const daysPassed = Math.floor((now - studyStart) / (1000 * 60 * 60 * 24));
-            daysPassedElem.textContent = Math.max(0, daysPassed);
-        }
-    });
-}
-
-// Current Time
-function updateCurrentTime() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-    const el = document.getElementById('currentTime');
-    if (el) el.textContent = timeString;
-}
-
-// Subject Selection for A/L
+// Subject Selection
 document.addEventListener('change', function(e) {
     if (e.target && e.target.matches('input[type="checkbox"].subject-checkbox')) {
         updateSelectedCount();
@@ -432,34 +791,6 @@ function clearSelection() {
     updateSelectedCount();
 }
 
-// Subject Selection for O/L
-function updateSelectedCountOL() {
-    const selected = document.querySelectorAll('#sectionOL input[type="checkbox"]:checked');
-    const count = selected.length;
-    const el = document.getElementById('selectedCountOL');
-    if (el) el.textContent = `${count} subjects selected`;
-    const showBtn = document.getElementById('showExamDatesBtnOL');
-    if (showBtn) {
-        if (count >= 1) showBtn.classList.remove('disabled'); else showBtn.classList.add('disabled');
-    }
-}
-
-function clearSelectionOL() {
-    document.querySelectorAll('#sectionOL input[type="checkbox"]').forEach(cb => cb.checked = false);
-    updateSelectedCountOL();
-}
-
-function showMyExamDatesOL() {
-    showAlert('📅', 'O/L Exam Schedule', 'Your personal O/L exam schedule will be displayed here!');
-}
-
-// Add event listeners for O/L checkboxes
-document.addEventListener('change', function(e) {
-    if (e.target && e.target.matches('#sectionOL input[type="checkbox"]')) {
-        updateSelectedCountOL();
-    }
-});
-
 // Show/Copy/Download placeholders
 function showMyExamDates() {
     showAlert('📅', 'A/L Schedule', 'Official A/L schedule has not been released yet.');
@@ -476,7 +807,7 @@ async function downloadScheduleImage() {
 // Popup close handlers
 function closeExamDatesPopup() {
     const popup = document.getElementById('examDatesPopup');
-    if (!popup) popup.classList.remove('show');
+    if (popup) popup.classList.remove('show');
 }
 
 document.addEventListener('click', function(e) {
@@ -709,9 +1040,6 @@ function renderComments() {
         const isEdited = comment.lastEdited && comment.lastEdited !== comment.timestamp;
         const displayName = getDisplayName(comment.author);
         
-        // Check if current user is admin for reply permissions
-        const canReply = isAdminUser;
-        
         return `
         <div class="comment-item" data-comment-id="${comment.id}">
             <div class="comment-header">
@@ -726,44 +1054,11 @@ function renderComments() {
             </div>
             <div class="comment-content">${comment.content}</div>
             
-            <!-- Display replies if any -->
-            ${comment.replies && comment.replies.length > 0 ? `
-                <div class="comment-replies">
-                    <div class="replies-header">
-                        <i class="fas fa-reply"></i>
-                        <span>Replies</span>
-                    </div>
-                    ${comment.replies.map(reply => {
-                        const replyDisplayName = getDisplayName(reply.author);
-                        return `
-                        <div class="comment-reply">
-                            <div class="reply-header">
-                                <span class="reply-author">
-                                    ${replyDisplayName}
-                                    ${isAdmin(reply.author) ? '<span class="admin-badge">👑 ADMIN</span>' : ''}
-                                </span>
-                                <span class="reply-time">${formatTime(reply.timestamp)}</span>
-                            </div>
-                            <div class="reply-content">${reply.content}</div>
-                        </div>
-                        `;
-                    }).join('')}
-                </div>
-            ` : ''}
-            
             <div class="comment-footer">
                 <button class="comment-action ${likedComments.has(comment.id) ? 'liked' : ''}" onclick="toggleLike(${comment.id})">
                     <i class="fas fa-heart"></i>
                     <span>${comment.likes}</span>
                 </button>
-                
-                <!-- Reply button - only for admin -->
-                ${canReply ? `
-                    <button class="comment-action reply-btn" onclick="startReply(${comment.id}, '${displayName}')">
-                        <i class="fas fa-reply"></i>
-                        <span>Reply</span>
-                    </button>
-                ` : ''}
                 
                 ${(isAuthor || isAdminUser) ? `
                     <button class="comment-action edit-btn" onclick="startEdit(${comment.id})">
@@ -818,27 +1113,6 @@ function toggleLike(commentId) {
     localStorage.setItem('exam_countdown_comments', JSON.stringify(comments));
 }
 
-// Start replying to a comment (admin only)
-function startReply(commentId, authorName) {
-    if (!isAdmin(currentUser)) {
-        showNotification('⚠️', 'You are not authorized to reply');
-        return;
-    }
-    
-    replyingTo = commentId;
-    const commentInput = document.getElementById('commentInput');
-    const submitBtn = document.getElementById('commentSubmit');
-    
-    if (commentInput && submitBtn) {
-        commentInput.placeholder = `Replying to ${authorName}...`;
-        commentInput.focus();
-        commentInput.classList.add('comment-input-reply-mode');
-        submitBtn.textContent = 'Post Reply';
-        submitBtn.classList.add('submit-btn-reply-mode');
-    }
-    showNotification('↩️', `Replying to ${authorName}`);
-}
-
 // Start editing a comment
 function startEdit(commentId) {
     const comment = comments.find(c => c.id === commentId);
@@ -856,37 +1130,6 @@ function startEdit(commentId) {
     }
     
     showNotification('✏️', 'Editing your comment...');
-}
-
-// Cancel edit mode
-function cancelEdit() {
-    editingComment = null;
-    const commentInput = document.getElementById('commentInput');
-    const submitBtn = document.getElementById('commentSubmit');
-    
-    if (commentInput && submitBtn) {
-        commentInput.value = '';
-        commentInput.placeholder = 'Write your thoughts about this website here...';
-        submitBtn.textContent = 'Submit Comment';
-        submitBtn.style.background = '';
-    }
-    
-    showNotification('❌', 'Edit cancelled');
-}
-
-// Cancel reply
-function cancelReply() {
-    replyingTo = null;
-    const commentInput = document.getElementById('commentInput');
-    const submitBtn = document.getElementById('commentSubmit');
-    
-    if (commentInput && submitBtn) {
-        commentInput.placeholder = 'Write your thoughts about this website here...';
-        commentInput.value = '';
-        commentInput.classList.remove('comment-input-reply-mode');
-        submitBtn.textContent = 'Submit Comment';
-        submitBtn.classList.remove('submit-btn-reply-mode');
-    }
 }
 
 // Delete a comment
@@ -954,7 +1197,7 @@ async function updateBackendAfterDelete() {
     }
 }
 
-// Enhanced submit function with edit and reply support
+// Enhanced submit function with edit support
 async function submitComment() {
     const input = document.getElementById('commentInput');
     const submitBtn = document.getElementById('commentSubmit');
@@ -979,9 +1222,6 @@ async function submitComment() {
         if (editingComment) {
             // Edit existing comment
             await editExistingComment(editingComment, content);
-        } else if (replyingTo && isAdmin(currentUser)) {
-            // Admin reply to comment
-            await submitAdminReply(replyingTo, content);
         } else {
             // New comment
             await submitNewComment(content);
@@ -990,7 +1230,6 @@ async function submitComment() {
         input.value = '';
         updateCharCount();
         cancelEdit();
-        cancelReply();
         
     } catch (error) {
         console.error('Submit comment error:', error);
@@ -999,7 +1238,6 @@ async function submitComment() {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Comment';
         submitBtn.style.background = '';
-        submitBtn.classList.remove('submit-btn-reply-mode');
     }
 }
 
@@ -1025,43 +1263,6 @@ async function editExistingComment(commentId, newContent) {
         showNotification('✅', 'Comment updated successfully!');
     } else {
         showNotification('⚠️', 'Comment updated locally (Backend issue)');
-    }
-}
-
-// Submit admin reply
-async function submitAdminReply(commentId, content) {
-    const comment = comments.find(c => c.id === commentId);
-    if (!comment) return;
-
-    const reply = {
-        id: Date.now(),
-        author: currentUser,
-        content: content,
-        timestamp: new Date().toISOString(),
-        isAdminReply: true
-    };
-
-    // Initialize replies array if it doesn't exist
-    if (!comment.replies) {
-        comment.replies = [];
-    }
-
-    // Add reply
-    comment.replies.push(reply);
-    
-    // Update local storage
-    localStorage.setItem('exam_countdown_comments', JSON.stringify(comments));
-    
-    // Update display
-    renderComments();
-    
-    // Update backend
-    const backendSuccess = await updateBackendAfterReply();
-    
-    if (backendSuccess) {
-        showNotification('✅', 'Reply posted successfully! 🎉');
-    } else {
-        showNotification('⚠️', 'Reply saved locally (Backend issue)');
     }
 }
 
@@ -1096,41 +1297,6 @@ async function updateBackendAfterEdit() {
         
     } catch (error) {
         console.error('Backend edit update error:', error);
-        return false;
-    }
-}
-
-// Update backend after reply
-async function updateBackendAfterReply() {
-    try {
-        const getResponse = await fetch(BACKEND_GET_URL, {
-            headers: {
-                'X-Master-Key': CONFIG.BACKEND.API_KEY,
-                'X-Bin-Meta': false
-            }
-        });
-        
-        if (!getResponse.ok) return false;
-        
-        const existingData = await getResponse.json();
-        
-        const updateResponse = await fetch(BACKEND_PUT_URL, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': CONFIG.BACKEND.API_KEY
-            },
-            body: JSON.stringify({
-                ...existingData,
-                comments: comments,
-                lastUpdated: new Date().toISOString()
-            })
-        });
-        
-        return updateResponse.ok;
-        
-    } catch (error) {
-        console.error('Backend reply update error:', error);
         return false;
     }
 }
@@ -1275,6 +1441,22 @@ function startCommentRefresh() {
     }, 30000);
 }
 
+// Cancel edit mode
+function cancelEdit() {
+    editingComment = null;
+    const commentInput = document.getElementById('commentInput');
+    const submitBtn = document.getElementById('commentSubmit');
+    
+    if (commentInput && submitBtn) {
+        commentInput.value = '';
+        commentInput.placeholder = 'මේ වෙබ් එක ගැන ඔයාගේ අදහස ලියන්න';
+        submitBtn.textContent = 'Submit Comment';
+        submitBtn.style.background = '';
+    }
+    
+    showNotification('❌', 'Edit cancelled');
+}
+
 // Backend Connection Test
 async function testBackendConnection() {
     try {
@@ -1289,6 +1471,26 @@ async function testBackendConnection() {
         if (response.ok) {
             const data = await response.json();
             console.log('✅ Backend connection successful!', data);
+            
+            // Load all data from backend
+            if (data.websiteSettings) {
+                websiteSettings = {...websiteSettings, ...data.websiteSettings};
+                updateWebsiteUI();
+            }
+            
+            if (data.examDates) {
+                examDates = {...examDates, ...data.examDates};
+            }
+            
+            if (data.quotes) {
+                quotes = {...quotes, ...data.quotes};
+            }
+            
+            if (data.batchStatus) {
+                batchStatus = {...batchStatus, ...data.batchStatus};
+                updateBatchButtons();
+            }
+            
             showNotification('✅', 'Backend connection successful!');
             return true;
         } else {
@@ -1300,6 +1502,22 @@ async function testBackendConnection() {
         console.error('❌ Backend test error:', error);
         showNotification('❌', 'Backend connection error');
         return false;
+    }
+}
+
+// Check if admin should be shown
+function checkAdminAccess() {
+    // Show admin menu item if user is admin
+    if (currentUser === 'sadeepa@12') {
+        const adminMenuItem = document.getElementById('adminMenuItem');
+        if (adminMenuItem) {
+            adminMenuItem.style.display = 'flex';
+        }
+    }
+    
+    // Check URL for admin access
+    if (window.location.href.includes('admin')) {
+        openAdminPanel();
     }
 }
 
@@ -1320,9 +1538,12 @@ async function initializeApp() {
     
     enableWhatsAppButton();
     
-    console.log('🚀 App initialized with UPDATED JSONBIN BACKEND!');
+    checkAdminAccess();
+    
+    console.log('🚀 App initialized with COMPLETE ADMIN SYSTEM!');
     console.log('Bin ID:', CONFIG.BACKEND.BIN_ID);
     console.log('Using API Key:', CONFIG.BACKEND.API_KEY);
+    console.log('Admin Access:', isAdminLoggedIn);
 }
 
 // Start timers
@@ -1333,4 +1554,98 @@ setInterval(getDailyQuote, 3600000);
 // Initialize on load
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-console.log('🚀 A/L & O/L Exam Countdown - ENHANCED WITH EDIT/DELETE & ADMIN REPLY');
+// Batch button event listeners
+document.querySelectorAll('.batch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (!btn.classList.contains('disabled')) switchBatch(btn.dataset.batch);
+    });
+});
+
+// Contact popup event listeners
+const contactBtn = document.getElementById('contactBtn');
+if (contactBtn) contactBtn.addEventListener('click', openContactPopup);
+
+const contactPopup = document.getElementById('contactPopup');
+if (contactPopup) {
+    contactPopup.addEventListener('click', function(e) {
+        if (e.target === this) closeContactPopup();
+    });
+}
+
+// Side menu close on outside click
+document.addEventListener('click', function(e) {
+    const sideMenu = document.getElementById('sideMenu');
+    const menuBtn = document.getElementById('menuBtn');
+    
+    if (sideMenu && menuBtn && !sideMenu.contains(e.target) && !menuBtn.contains(e.target) && sideMenu.classList.contains('show')) {
+        closeSideMenu();
+    }
+});
+
+// Close admin panels on escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (isAdminLoggedIn) {
+            logoutAdmin();
+        }
+        closeAlert();
+        closeContactPopup();
+    }
+});
+
+// Edit exam date function
+function editExamDate(year) {
+    const date = examDates[year];
+    const dateInput = document.getElementById('examDateInput');
+    const yearSelect = document.getElementById('examYearSelect');
+    
+    if (dateInput && yearSelect) {
+        dateInput.value = date.toISOString().split('T')[0];
+        yearSelect.value = year;
+        dateInput.focus();
+        
+        showNotification('✏️', `Editing ${year === 'ol' ? '2025 O/L' : year + ' A/L'} date`);
+    }
+}
+
+// Edit quote function
+function editQuote(year, number) {
+    const quote = quotes[year][number];
+    const quoteTextInput = document.getElementById('quoteTextInput');
+    const quoteNumberInput = document.getElementById('quoteNumberInput');
+    const quoteYearSelect = document.getElementById('quoteYearSelect');
+    
+    if (quoteTextInput && quoteNumberInput && quoteYearSelect) {
+        quoteTextInput.value = quote;
+        quoteNumberInput.value = number;
+        quoteYearSelect.value = year;
+        quoteTextInput.focus();
+        
+        showNotification('✏️', `Editing quote for ${year === 'ol' ? '2025 O/L' : year + ' A/L'}`);
+    }
+}
+
+// Loading spinner CSS
+const style = document.createElement('style');
+style.textContent = `
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+
+console.log('🚀 A/L & O/L Exam Countdown - COMPLETE ADMIN SYSTEM WITH FULL CONTROL');
+console.log('🔧 Features: Website Settings, Exam Dates, Quotes, Batch Management');
+console.log('👤 Admin Login: Username: admin, Password: exam2024');
+console.log('🌐 Admin Panel: Add /admin to URL');
+console.log('💾 Backend: JSONBin with full CRUD operations');
